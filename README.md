@@ -1,26 +1,26 @@
 # BotrytisDNA_pipeline
 
 
-#FastQC
+# FastQC
 
 
-#MultiQC
+# MultiQC
 
 
-#Fastp (initial trim)
+# Fastp (initial trim)
 
 
-#FastQC and MultiQC again
+# FastQC and MultiQC again
 
 
-#Obtain reference genome
+# Obtain reference genome
 
 
-#Index reference genome with Bwa-Mem2
+# Index reference genome with Bwa-Mem2
 
 
-#Align samples to reference genome with Bwa-Mem2
+# Align samples to reference genome with Bwa-Mem2
 
 
 
-#Convert Sam to Bam
+# Convert Sam to Bam
