@@ -65,9 +65,22 @@ scontrol show job $SLURM_JOB_ID     ### write job information to output file
 
 
 
+
+
+
+
+
+
+
 on command line: 
+
 coverage$ awk 'FNR>1{a+=$6;b++}END{print "Average: " a/b}' *txt
 Average: 95.3505
+
+Using samtools depth -a
+
+depth$ awk 'FNR>1{a+=$3;b++}END{print "Average: " a/b}' AF15_S92_aln_bwamem2_sort_rmvdups_depth.txt
+Average: 21.6842
 
 
 
