@@ -84,3 +84,4 @@ Average: 21.6842
 
 
 
+For all 96: ranges from 11-49x, with an average of 24x coverage depth.
