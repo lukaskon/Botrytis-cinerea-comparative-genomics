@@ -29,7 +29,7 @@ scontrol show job $SLURM_JOB_ID
 ```
 
 # MultiQC
-
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -52,10 +52,10 @@ multiqc .
 
 
 scontrol show job $SLURM_JOB_ID
-
+```
 
 # Fastp (initial trim)
-
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -96,7 +96,7 @@ scontrol show job $SHOW_JOB_ID     ### write job information to output file
 
 
 #For adapters, refer to https://github.com/timflutre/trimmomatic/blob/master/adapters/NexteraPE-PE.fa
-
+```
 
 
 
@@ -121,7 +121,7 @@ Botrytis_cinerea.ASM83294v1.dna.toplevel.fa.gz.amb   Botrytis_cinerea.ASM83294v1
 
 
 # Index reference genome with Bwa-Mem2
-
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -143,11 +143,11 @@ cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/DNAscripts/Bcinerea_RefGe
 
 
 scontrol show job $SLURM_JOB_ID
-
+```
 
 
 # Align samples to reference genome with Bwa-Mem2
-
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -184,11 +184,11 @@ sam
 done
 
 scontrol show job $SLURM_JOB_ID 
-
+```
 
 
 # Convert Sam to Bam
-
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -221,8 +221,10 @@ samtools view --threads 8 -Sb ${base}_L002_aln_bwamem2.sam > /mnt/research/Hausb
 done
 
 scontrol show job $SLURM_JOB_ID 
+```
 
 # Sort and index Bam files
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -264,10 +266,10 @@ done
 
 
 scontrol show job $SLURM_JOB_ID
-
+```
 
 # Mark and remove duplicates
-
+```
 #!/bin/bash --login
 ########### Define Resources Needed with SBATCH Lines ##########
 
@@ -298,12 +300,13 @@ mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/6_Duplicates_removed_Bcinerea
 done
 
 scontrol show job $SLURM_JOB_ID 
-
+```
 
 
 # Calculating coverage across all samples
 
 more runSamtools_cov.sb
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -335,14 +338,11 @@ samtools coverage ${base}.bam -o /mnt/research/Hausbeck_group/Lukasko/BotrytisDN
 done
 
 scontrol show job $SLURM_JOB_ID     ### write job information to output file
+```
 
 
 
-
-
-
-
-on command line: 
+command line: 
 
 coverage$ awk 'FNR>1{a+=$6;b++}END{print "Average: " a/b}' *txt
 Average: 95.3505
@@ -361,7 +361,7 @@ For all 96: ranges from 11-49x, with an average of 24x coverage depth.
 
 # Call variants
 
-
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -392,7 +392,7 @@ done
 
 
 scontrol show job $SLURM_JOB_ID 
-
+```
 
 # Filter variants (incomplete)
 
