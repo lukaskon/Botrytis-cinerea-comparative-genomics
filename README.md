@@ -2,6 +2,7 @@
 
 
 # FastQC
+```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
@@ -25,7 +26,7 @@ fastqc *fastq.gz -o FastQC_MultiQC_reports/
 
 
 scontrol show job $SLURM_JOB_ID 
-
+```
 
 # MultiQC
 
