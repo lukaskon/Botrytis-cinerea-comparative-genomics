@@ -391,3 +391,17 @@ done
 
 
 scontrol show job $SLURM_JOB_ID 
+
+
+# Filter variants (incomplete)
+
+First, create an environment to install vcflib (under bioconda channel):
+conda create --n Vcflib_Bcin
+conda install - Vcflib_Bcin -c bioconda vcflib
+To leave environment: conda deactivate
+
+Alternatively, just install the package in the bash script
+
+
+
+
