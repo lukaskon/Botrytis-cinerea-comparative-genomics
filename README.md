@@ -486,6 +486,6 @@ vcftools --gzvcf Bcin_filtered.vcf.gz --missing-site --out /mnt/research/Hausbec
 scontrol show job $SLURM_JOB_ID     ### write job information to output file
 ```
 
-
+## Move stats output onto local machine and use R to view. (See Variant Based Statistics.R in current repository)
 
 
