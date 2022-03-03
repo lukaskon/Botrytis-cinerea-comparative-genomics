@@ -369,8 +369,8 @@ For all 96: ranges from 11-49x, with an average of 24x coverage depth.
 #SBATCH --ntasks=1                  # number of tasks - how many tasks (nodes) that you require (same as -n)
 #SBATCH --cpus-per-task=32           # number of CPUs (or cores) per task (same as -c)
 #SBATCH --mem=20G                    # memory required per node - amount of memory (in bytes)
-#SBATCH --job-name 2Bcftools_Bcin      # you can give your job a name for easier identification (same as -J)
-#SBATCH -o Bcftool_calls_Bcinerea_slurm2
+#SBATCH --job-name Bcftools_Bcin      # you can give your job a name for easier identification (same as -J)
+#SBATCH -o Variant_calls_correct_slurm
 
 ########## Command Lines to Run ##########
 
@@ -378,35 +378,113 @@ module load GCC/6.4.0-2.28  OpenMPI/2.1.2
 module load bcftools/1.9.64
 
 cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/6_Duplicates_removed_Bcinerea
-mkdir /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/7.2_VCF_Bcinerea
 
-for infile in *.bam
-
-do
-
-base=$(basename ${infile} .bam)
-bcftools mpileup -a AD,DP,SP -f /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/Bcinerea_RefGenome_Ensembl/Botrytis_cinerea.ASM83294v1.dna.toplevel.fa ${b
-ase}.bam|bcftools call -f GQ,GP --threads 32 -mO z -o /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/7.2_VCF_Bcinerea/${base}_calls.vcf.gz
-
-done
+bcftools mpileup -a AD,DP,SP -Ou -f /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/Bcinerea_RefGenome_Ensembl/Botrytis_cinerea.ASM83294v1.dna.toplevel.fa *.bam|bcftools call -f GQ,GP -mO z -o /mn
+t/research/Hausbeck_group/Lukasko/BotrytisDNASeq/unfilteredVCF/Bcin_unfiltered.vcf.gz
 
 
-scontrol show job $SLURM_JOB_ID 
+scontrol show job $SLURM_JOB_ID     ### write job information to output file 
 ```
 
-# Filter variants (incomplete)
 
-To view the number of variants in a file:
+# Take a random sample of variants and run stats to decide on filtering parameters
+
+### To view the number of variants in a file:
+```
 module load bcftools
 bcftools view -H I16_S58_aln_bwamem2_sort_rmvdups_calls.vcf.gz |wc -l
+```
+
+## Pull a random 200,000 variants, then compress and index
+
+```
+#!/bin/bash --login
+########## Define Resources Needed with SBATCH Lines ##########
+
+#SBATCH --time=24:00:00             # limit of wall clock time - how long the job will run (same as -t)
+#SBATCH --ntasks=1                  # number of tasks - how many tasks (nodes) that you require (same as -n)
+#SBATCH --cpus-per-task=32           # number of CPUs (or cores) per task (same as -c)
+#SBATCH --mem=40G                    # memory required per node - amount of memory (in bytes)
+#SBATCH --job-name subsetVar      # you can give your job a name for easier identification (same as -J)
+#SBATCH -o UnfilteredVCF_subset_index_slurm
+
+########## Command Lines to Run ##########
 
 
-First, create an environment to install vcflib (under bioconda channel):
-conda create --n Vcflib_Bcin
-conda install - Vcflib_Bcin -c bioconda vcflib
-To leave environment: conda deactivate
+cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/7_unfilteredVCF
+mkdir /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/8_unfilteredVCF_subset
 
-Alternatively, just install the package in the bash script
+
+module load GCC/6.4.0-2.28  OpenMPI/2.1.2
+module load bcftools/1.9.64
+conda install -c bioconda vcflib
+
+
+
+bcftools view Bcin_unfiltered.vcf.gz |vcfrandomsample -r 0.0046 > /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/8_VCF_subset_Bcinerea_subset/Bcin_unfiltered_subset.vcf
+
+# sample rate was chosen as 0.0024 so it would yeild ~200,000 random VCFs (200,000/42,801,380=~0.0046)
+
+
+echo Random 200,000 variants pulled.
+
+cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/8_unfilteredVCF_subset
+
+#compress (like bgzip, not gzip)
+bcftools view Bcin_unfiltered_subset.vcf -Oz -o Bcin_unfiltered_subset.vcf
+echo Compressed.
+
+#index compressed files to make it easier to access for running stats later
+bcftools index Bcin_unfiltered_subset.vcf.gz
+echo Indexed.
+
+
+# https://github.com/vcflib/vcflib/blob/master/doc/vcfrandomsample.md
+# https://speciationgenomics.github.io/filtering_vcfs/
+
+scontrol show job $SLURM_JOB_ID     ### write job information to output file
+```
+
+
+## Stats
+```
+#!/bin/bash --login
+########## Define Resources Needed with SBATCH Lines ##########
+
+#SBATCH --time=18:00:00             # limit of wall clock time - how long the job will run (same as -t)
+#SBATCH --ntasks=1                  # number of tasks - how many tasks (nodes) that you require (same as -n)
+#SBATCH --cpus-per-task=32           # number of CPUs (or cores) per task (same as -c)
+#SBATCH --mem=60G                    # memory required per node - amount of memory (in bytes)
+#SBATCH --job-name Vcftools_Bcin      # you can give your job a name for easier identification (same as -J)
+#SBATCH -o VCFstats_filtered_slurm
+
+########## Command Lines to Run ##########
+
+module load GNU/7.3.0-2.30  OpenMPI/3.1.1
+module load VCFtools/0.1.15-Perl-5.28.0
+
+
+cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/7_unfilteredVCF
+mkdir /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/9_FilteredVCF_Stats
+
+vcftools --gzvcf Bcin_filtered.vcf.gz --freq2 --out /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/9_FilteredVCF_Stats/Bcin_filteredMAF.vcf.gz --max-alleles 2
+
+vcftools --gzvcf Bcin_filtered.vcf.gz --depth --out /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/9_FilteredVCF_Stats/Bcin_filteredMAF.vcf.gz
+
+vcftools --gzvcf Bcin_filtered.vcf.gz --site-mean-depth --out  /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/9_FilteredVCF_Stats/Bcin_filteredMAF.vcf.gz
+
+vcftools --gzvcf Bcin_filtered.vcf.gz --site-quality --out /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/9_FilteredVCF_Stats/Bcin_filteredMAF.vcf.gz
+
+vcftools --gzvcf Bcin_filtered.vcf.gz --missing-indv --out /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/9_FilteredVCF_Stats/Bcin_filteredMAF.vcf.gz
+
+vcftools --gzvcf Bcin_filtered.vcf.gz --missing-site --out /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/9_FilteredVCF_Stats/Bcin_filteredMAF.vcf.gz
+
+
+# MAF in output file name indicates that this was filtered with MAF of 0.1
+
+
+scontrol show job $SLURM_JOB_ID     ### write job information to output file
+```
 
 
 
