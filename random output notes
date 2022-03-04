@@ -14,3 +14,6 @@ File attributes:
 Meta line 50 read in.
 All meta lines processed.
 Error: cannot allocate vector of size 20.2 Gb
+
+
+try using memory_limit() to see or increase R ram?
