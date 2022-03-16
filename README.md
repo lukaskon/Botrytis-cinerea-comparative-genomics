@@ -146,6 +146,10 @@ scontrol show job $SLURM_JOB_ID
 ```
 
 
+# Add read group information here?
+
+
+
 # Align samples to reference genome with Bwa-Mem2
 ```
 #!/bin/bash --login
@@ -302,6 +306,7 @@ done
 scontrol show job $SLURM_JOB_ID 
 ```
 
+# Use GATK IndelRealigner here?
 
 # Calculating coverage across all samples
 
