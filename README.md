@@ -400,7 +400,160 @@ module load bcftools
 bcftools view -H I16_S58_aln_bwamem2_sort_rmvdups_calls.vcf.gz |wc -l
 ```
 
-## Pull a random 200,000 variants, then compress and index
+# Filter variants
+
+```
+#!/bin/bash --login
+########## Define Resources Needed with SBATCH Lines ##########
+
+#SBATCH --time=24:00:00             # limit of wall clock time - how long the job will run (same as -t)
+#SBATCH --ntasks=1                  # number of tasks - how many tasks (nodes) that you require (same as -n)
+#SBATCH --cpus-per-task=32           # number of CPUs (or cores) per task (same as -c)
+#SBATCH --mem=80G                    # memory required per node - amount of memory (in bytes)
+#SBATCH --job-name FilterVCF_maf0.1      # you can give your job a name for easier identification (same as -J)
+#SBATCH -o FilterVCF_maf0.1_slurm
+
+########## Command Lines to Run ##########
+
+module load GNU/7.3.0-2.30  OpenMPI/3.1.1
+module load VCFtools/0.1.15-Perl-5.28.0
+
+
+cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/7_unfilteredVCF
+
+
+vcftools --gzvcf Bcin_unfiltered.vcf.gz --remove-indels \
+--maf 0.1 \
+--max-missing 0.9 \
+--minQ 30 \
+--min-meanDP 10 \
+--max-meanDP 45 \
+--minDP 10 \
+--maxDP 45 \
+--recode --stdout |gzip -c > Bcin_filtered.vcf.gz
+
+
+#run with and without maf (minor allele frequency) filtering
+
+
+scontrol show job $SLURM_JOB_ID     ### write job information to output file
+```
+
+
+## Convert to BED file using PLINK 2.0 in a conda environment
+
+
+# Run ADMIXTURE analysis on SNPs only
+
+```
+#!/bin/bash --login
+########## Define Resources Needed with SBATCH Lines ##########
+
+#SBATCH --time=24:00:00             # limit of wall clock time - how long the job will run (same as -t)
+#SBATCH --ntasks=1                  # number of tasks - how many tasks (nodes) that you require (same as -n)
+#SBATCH --cpus-per-task=16           # number of CPUs (or cores) per task (same as -c)
+#SBATCH --mem=60G                    # memory required per node - amount of memory (in bytes)
+#SBATCH --job-name runADMIXTURE_SNP     # you can give your job a name for easier identification (same as -J)
+#SBATCH -o AdmixtureSNPs_K4_slurm
+
+########## Command Lines to Run ##########
+
+module load admixture                   ### load necessary modules, e.g.
+
+cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/PopStrucutre_admixture/SNPs_only
+
+
+#for K in 1 2 3 4 5 6 7 8 9 10; do admixture --cv -j16 BcinSNP_ann.bed $K | tee log${K}.out; done
+
+
+admixture BcinSNP_ann.bed 4 --haploid="*" -j16
+
+
+
+scontrol show job $SLURM_JOB_ID     ### write job information to output file
+```
+
+# Extract different regions of interest
+
+```
+#!/bin/bash --login
+#SBATCH --time=05:00:00             # limit of wall clock time - how long the job will run
+#SBATCH --ntasks=1                  # number of tasks - how many tasks (nodes) that you requir
+#SBATCH --cpus-per-task=1           # number of CPUs (or cores) per task (same as -c)
+#SBATCH --mem=50G                    # memory required per node - amount of memory (in bytes)
+#SBATCH --job-name=VCF_Fasta
+#SBATCH --mail-user=lukaskon@msu.edu
+#SBATCH --mail-type=ALL
+#SBATCH -o VCF_ExtractFast_bcsak1_slurm
+
+cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/
+
+module load Java/JDK12
+
+#module load SAMtools
+#module load bcftools
+
+while IFS= read -r sample; do
+
+base=$(basename ${sample} /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/2_Fastp_Trimmed_DNA/)
+
+gatk-4.2.5.0/gatk SelectVariants -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.toplevel.fa -V /mnt
+/research/Hausbeck_group/Lukasko/BotrytisDNASeq/10_FilteredVCF/haploid2/annotated/SNPsandINDELs_all/Bcin1_all_filtered_PASSrename.ann.vcf -sn ${sample} --remove-unused-
+alternates -O ${base}.vcf
+
+###SPECIES IDENTIFICATION###
+
+#Bc-hch
+#gatk-4.2.5.0/gatk FastaAlternateReferenceMaker -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.topl
+evel.fa -O Extractions/${base}_Bc_hch.fasta -L 3:1377619-1380106 -V ${base}.vcf
+
+#G3PDH
+#gatk-4.2.5.0/gatk FastaAlternateReferenceMaker -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.topl
+evel.fa -O Extractions/${base}_G3PDH.fasta -L 15:731321-732206 -V ${base}.vcf
+
+#HSP60
+#gatk-4.2.5.0/gatk FastaAlternateReferenceMaker -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.topl
+evel.fa -O Extractions/${base}_HSP60.fasta -L 7:1919521-1920496 -V ${base}.vcf
+
+#RPB2
+#gatk-4.2.5.0/gatk FastaAlternateReferenceMaker -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.topl
+evel.fa -O Extractions/${base}_RPB2.fasta -L 14:703646-704738 -V ${base}.vcf
+
+#ITS
+#gatk-4.2.5.0/gatk FastaAlternateReferenceMaker -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.topl
+evel.fa -O Extractions/${base}_ITS.fasta -L 4:4407-4945 -V ${base}.vcf
+
+#Used accession number from B. cinerea sample X458 in "Botrytis californica, a new cryptic species in the B. cinereaspecies complex causing gray mold in blueberries and
+ table grapes" to find the regions of interest.
+
+
+
+###BCINEREA GENES OF INTEREST###
+
+
+#mrr1
+#gatk-4.2.5.0/gatk FastaAlternateReferenceMaker -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.topl
+evel.fa -O Extractions/${base}_mrr1.fasta -L 5:681219-683662 -V ${base}.vcf
+#See Leroch et al 2013 for mrr1 comparisons
+
+#bcsak1 (fludioxonil resistance, Li et al 2014)
+gatk-4.2.5.0/gatk FastaAlternateReferenceMaker -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.tople
+vel.fa -O Extractions/${base}_bcsak1.fasta -L 15:1253980-1255649 -V ${base}.vcf
+
+
+
+#MAT1-1 (De Miccolis Angelini et al. 2016) INCORRECT SIZE?
+#gatk-4.2.5.0/gatk FastaAlternateReferenceMaker -R /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.topl
+evel.fa -O ${base}_MAT1-1.fasta -L 1:811885-818317 -V ${base}.vcf
+
+
+
+done < /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/10_FilteredVCF/haploid2/annotated/SNPs_only/Newsamplesnames.txt
+```
+
+
+
+## Pull a random 200,000 variants, then compress and index (MOST RECENT ANALYSIS DID NOT DO THIS)
 
 ```
 #!/bin/bash --login
