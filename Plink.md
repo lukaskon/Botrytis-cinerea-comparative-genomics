@@ -125,6 +125,11 @@ plink2 --bfile Bcin123_LDsubset --pca 5 --out BcinMAF05_PCA_results
 Download locally to view in R
 
 
+```
+setwd("C:/Users/nikki/Michigan State University/PSM.Hausbecklab - Nikki Lukasko - Nikki Lukasko/Botrytis/Molecular/Population Structure Analysis/Plink PCA")
 
+pca_table <- read.table("BcinMAF05_PCA_results.eigenvec", header = TRUE, comment.char = "")
+plot(pca_table[, c("PC1", "PC2", "PC3", "PC4", "PC5")])
+```
 
 
