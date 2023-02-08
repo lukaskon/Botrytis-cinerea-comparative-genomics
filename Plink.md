@@ -1,6 +1,9 @@
-
 # Plink: filtering VCF and preparing for data visualization
 ==============================================================================
+### Refer to "Statistical Population Genomics" 
+### Chapter 4: Data Management and Summary Statistics with PLINK by Christopher C. Chang
+
+
 Note: Everything in this markdown file can be done command line quickly.
 
 ### Validate variants on command line (takes a ~5m)
