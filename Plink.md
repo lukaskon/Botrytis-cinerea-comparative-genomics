@@ -3,16 +3,18 @@
 ==============================================================================
 
 
-### Validate variants on command line (takes a couple minutes)
+### Validate variants on command line (takes a ~5m)
 ```
 BotrytisDNASeq$ gatk-4.2.5.0/gatk ValidateVariants -V 10_FilteredVCF/Plates123/PLINK/BcinereaP123.SNVonly.filteredPASS_renamed.vcf
 ```
-
+```
+module spider plink #version needed will depend on task
+```
 
 ## Convert VCF to BED file (plink binary format) 
 
 
-```
+```C++
 plink2 --vcf BcinereaP123.SNVonly.filteredPASS_renamed.vcf \
 --make-bed \
 --out Bcin123_SNV1.bed
