@@ -132,4 +132,10 @@ pca_table <- read.table("BcinMAF05_PCA_results.eigenvec", header = TRUE, comment
 plot(pca_table[, c("PC1", "PC2", "PC3", "PC4", "PC5")])
 ```
 
+## Export to VCF for other processes (may want LD pruned or one step before)
+
+```
+plink2 --bfile Bcin123_LDsubset --ref-from-fa /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/0_DNAscripts/ReferenceGenome/Botrytis_cinerea.ASM83294v1.dna.toplevel.fa --export vcf --out Bcin123_plinkLDpruned
+```
+
 
