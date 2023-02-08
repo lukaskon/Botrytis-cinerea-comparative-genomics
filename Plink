@@ -8,7 +8,7 @@ module spider PLINK/2.00a_10.2-x86_64
 ## Convert VCF to BED file (plink binary format)
 
 
-```
+```C++
 plink2 --vcf BcinereaP123.SNVonly.filteredPASS_renamed2.vcf \
 --make-bed \
 --out Bcin123_SNV1.bed
