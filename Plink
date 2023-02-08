@@ -1,7 +1,7 @@
+# Plink: filtering VCF and preparing for data visualization in R
 
-### Plink: filtering VCF and preparing for data visualization in R
 
-# Convert VCF to BED file (plink binary format)
+## Convert VCF to BED file (plink binary format)
 
 ```
 plink2 --vcf BcinereaP123.SNVonly.filteredPASS_renamed2.vcf \
@@ -9,7 +9,8 @@ plink2 --vcf BcinereaP123.SNVonly.filteredPASS_renamed2.vcf \
   --out Bcin123_SNV.bed
 ```
 
-# Rename variants without a unique ID for easy downstream processing
+
+## Rename variants without a unique ID for easy downstream processing
 
 ```
 plink --bfile Bcin123_SNV.bed \
