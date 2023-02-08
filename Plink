@@ -5,7 +5,7 @@
 module spider PLINK/2.00a_10.2-x86_64
 
 
-## Convert VCF to BED file (plink binary format)
+## Convert VCF to BED file (plink binary format) ##
 
 
 ```
