@@ -1,7 +1,7 @@
 
 # Plink: filtering VCF and preparing for data visualization
 ==============================================================================
-
+Note: Everything in this markdown file can be done command line quickly.
 
 ### Validate variants on command line (takes a ~5m)
 ```
@@ -111,9 +111,18 @@ plink2 --bfile Bcin123_hwe4 \
 ```
 --indep-pairwise (16 compute threads): 538735/570854 variants removed.
 
+## Create SNP subset
+```
+plink --bfile Bcin123_hwe4 --extract Bcin123_LDpruned.prune.in --make-bed --out Bcin123_LDsubset
+```
+32119 variants and 278 people pass filters and QC.
 
+## PCA
+```
+plink2 --bfile Bcin123_LDsubset --pca 5 --out BcinMAF05_PCA_results
+```
 
-
+Download locally to view in R
 
 
 
