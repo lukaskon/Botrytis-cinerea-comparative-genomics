@@ -1,11 +1,15 @@
 
-# Plink: filtering VCF and preparing for data visualization in R
-==================================================================
-
-module spider PLINK/2.00a_10.2-x86_64
+# Plink: filtering VCF and preparing for data visualization
+==============================================================================
 
 
-## Convert VCF to BED file (plink binary format) ##
+### Validate variants on command line (takes a couple minutes)
+```
+BotrytisDNASeq$ gatk-4.2.5.0/gatk ValidateVariants -V 10_FilteredVCF/Plates123/PLINK/BcinereaP123.SNVonly.filteredPASS_renamed.vcf
+```
+
+
+## Convert VCF to BED file (plink binary format) 
 
 
 ```
