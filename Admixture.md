@@ -7,7 +7,7 @@ Starting with .bed file and other outputs for reading from plink filtering (Bcin
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
-#SBATCH --time=24:00:00             # limit of wall clock time - how long the job will run (same as -t)
+#SBATCH --time=02:00:00             # limit of wall clock time - how long the job will run (same as -t)
 #SBATCH --ntasks=1                  # number of tasks - how many tasks (nodes) that you require (same as -n)
 #SBATCH --cpus-per-task=16           # number of CPUs (or cores) per task (same as -c)
 #SBATCH --mem=60G                    # memory required per node - amount of memory (in bytes)
