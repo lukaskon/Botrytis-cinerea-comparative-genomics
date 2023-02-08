@@ -9,7 +9,7 @@ module spider PLINK/2.00a_10.2-x86_64
 
 
 ```
-plink2 --vcf BcinereaP123.SNVonly.filteredPASS_renamed2.vcf \
+plink2 --vcf BcinereaP123.SNVonly.filteredPASS_renamed.vcf \
 --make-bed \
 --out Bcin123_SNV1.bed
 ```
