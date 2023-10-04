@@ -85,18 +85,20 @@ for file in *; do echo ${file} >> ProteinCounts_augustus.txt; grep -rn "protein"
 
 ## Identify orthologous group with OrthoMCL
 
+#### First, request database and MySQL access: https://docs.icer.msu.edu/MySQL_configuration/
+
+orthomcl.config provided by HPCC:
+```
+
+```
+
+
 ```
 module load icc/2016.3.210-GCC-5.4.0-2.26  impi/5.1.3.181
 module load OrthoMCL/2.0.9-Perl-5.24.0
 
-
-
+orthomclPairs orthomcl.config log_file cleanup=[yes|no|only|all] <startAfter=TAG>
 ```
-#### Look at variation
-```
-for file in *.gbk; do grep -rn "CDS" ${file}|wc -l ; done
-```
-
 
 
 
