@@ -43,39 +43,45 @@ scontrol show job $SHOW_JOB_ID
 
 ```
 
-## Annotate proteins with Prodigal
+## Annotate proteins with Augustus (in batches because it takes approx 1hr/fasta)
 ```
 #!/bin/bash --login
 ########## Define Resources Needed with SBATCH Lines ##########
 
 
-#SBATCH --time=10:00:00             # limit of wall clock time - how long the job will run (same as -t)
+#SBATCH --time=100:00:00             # limit of wall clock time - how long the job will run (same as -t)
 #SBATCH --ntasks=1                  # number of tasks - how many tasks (nodes) that you require (same as -n)
-#SBATCH --cpus-per-task=8           # number of CPUs (or cores) per task (same as -c)
-#SBATCH --mem=50G                    # memory required per node - amount of memory (in bytes)
-#SBATCH --job-name=prodigal_annotation      # you can give your job a name for easier identification (same as -J)
-#SBATCH -o Prodigal_slurm
+#SBATCH --cpus-per-task=16           # number of CPUs (or cores) per task (same as -c)
+#SBATCH --mem=80G                    # memory required per node - amount of memory (in bytes)
+#SBATCH --job-name=augustus_annotation_qz      # you can give your job a name for easier identification (same as -J)
+#SBATCH -o Augustus_QZ_slurm
 
 ########## Command Lines to Run ##########
 
 cd /mnt/research/Hausbeck_group/Lukasko/BotrytisDNASeq/FASTAs
 
-module load GCCcore/10.2.0
-module load prodigal/2.6.3
+module purge
+conda activate funannotate
 
-for infile in *.fa
+#module load GCC/11.3.0  OpenMPI/4.1.4
+#module load AUGUSTUS/3.5.0
+#AUGUSTUS_CONFIG_PATH=/opt/software/AUGUSTUS/3.5.0-foss-2022a/config
+
+
+for infile in [Q-Z]*.fa
 
 do
 
 base=$(basename ${infile} .fa)
 
-prodigal -i ${base}.fa -o prodigal_annotations/${base}_proteins.gbk
+augustus ${base}.fa --species=botrytis_cinerea > augustus_annotations/${base}_Augustus.gff
 
 done
 
-scontrol show job $SHOW_JOB_ID
+scontrol show job $SLURM_JOB_ID
 
 ```
+for file in *; do echo ${file} >> ProteinCounts_augustus.txt; grep -rn "protein" ${file}|wc -l >> ProteinCounts_augustus.txt; done
 
 ## Identify orthologous group with OrthoMCL
 
