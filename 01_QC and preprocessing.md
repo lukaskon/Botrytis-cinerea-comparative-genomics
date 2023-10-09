@@ -439,6 +439,7 @@ vcftools --gzvcf Bcin_unfiltered.vcf.gz --remove-indels \
 
 scontrol show job $SLURM_JOB_ID     ### write job information to output file
 ```
+https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants
 
 
 ## Convert to BED file using PLINK 2.0 in a conda environment
